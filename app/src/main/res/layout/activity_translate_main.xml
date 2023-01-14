@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/material_dynamic_neutral_variant100"
     android:orientation="vertical"
     tools:context=".ui.TranslateMainActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/material_dynamic_neutral_variant100"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:title="Translate BN-EN"
+        app:titleTextColor="@color/black" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +30,7 @@
             android:id="@+id/edtText"
             android:layout_width="match_parent"
             android:layout_height="250dp"
-            android:layout_marginTop="3dp"
+            android:layout_margin="10dp"
             android:background="@color/material_dynamic_tertiary95"
             android:gravity="top"
             android:hint="Type here..."
@@ -48,6 +60,7 @@
             android:id="@+id/txtVwOutput"
             android:layout_width="match_parent"
             android:layout_height="250dp"
+            android:layout_margin="10dp"
             android:background="@color/material_dynamic_neutral_variant80"
             android:paddingStart="5dp"
             android:paddingTop="5dp"
@@ -55,6 +68,15 @@
             android:paddingBottom="5dp"
             android:textSize="20sp"
             android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/copy_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:clickable="true"
+            android:src="@drawable/clipboard_copy_logo" />
 
     </LinearLayout>
 </LinearLayout>

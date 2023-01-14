@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">TranslateMe</string>
+    <string name="your_feedback">Your feedback</string>
+    <string name="history">History</string>
 </resources>

@@ -1,10 +1,13 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    // kapt annotation processor Kotlin plugin
+    id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.nurshuvo.translateme"
@@ -45,7 +48,12 @@ dependencies {
 
     // lifecycle, view model
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
-    implementation "androidx.activity:activity-ktx:1.0.0"
+    implementation "androidx.activity:activity-ktx:1.6.1"
+
+    // Room components
+    implementation "androidx.room:room-ktx:2.5.0"
+    kapt "androidx.room:room-compiler:2.5.0"
+    androidTestImplementation "androidx.room:room-testing:2.5.0"
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
