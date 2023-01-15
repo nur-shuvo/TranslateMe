@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.TranslationHistoryActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".ui.TranslationHistoryActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/my_toolbar_history"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/material_dynamic_neutral_variant100"
+        android:background="#00AEAD"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:title="History"
-        app:titleTextColor="@color/black" />
+        app:titleTextColor="@color/white" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/history_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="24dp"
         app:layoutManager="LinearLayoutManager" />
 
 </LinearLayout>

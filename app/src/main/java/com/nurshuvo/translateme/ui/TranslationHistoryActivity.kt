@@ -18,6 +18,7 @@ class TranslationHistoryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.history_layout)
         setSupportActionBar(findViewById(R.id.my_toolbar_history))
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.action_bar_back_icon)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         initObserver()

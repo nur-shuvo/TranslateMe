@@ -12,12 +12,12 @@
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/material_dynamic_neutral_variant100"
+        android:background="#00AEAD"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:title="Translate BN-EN"
-        app:titleTextColor="@color/black" />
+        app:titleTextColor="@color/white" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -61,13 +61,14 @@
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:layout_margin="10dp"
-            android:background="@color/material_dynamic_neutral_variant80"
+            android:background="#00AEAD"
             android:paddingStart="5dp"
             android:paddingTop="5dp"
             android:paddingEnd="5dp"
             android:paddingBottom="5dp"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:titleTextColor="@color/white" />
 
         <ImageView
             android:id="@+id/copy_icon"
@@ -76,7 +77,8 @@
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:clickable="true"
+            android:foreground="?selectableItemBackground"
+            android:scaleType="centerCrop"
             android:src="@drawable/clipboard_copy_logo" />
-
     </LinearLayout>
 </LinearLayout>
