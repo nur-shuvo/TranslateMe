@@ -23,6 +23,7 @@ import com.nurshuvo.translateme.R
 import com.nurshuvo.translateme.database.entity.TranslationHistory
 import com.nurshuvo.translateme.ui.viewmodel.TranslateMainViewModel
 import com.nurshuvo.translateme.ui.viewmodel.TranslateMainViewModelFactory
+import com.nurshuvo.translateme.util.TranslationObject
 import kotlinx.coroutines.launch
 
 
@@ -82,10 +83,6 @@ class TranslateMainActivity : AppCompatActivity() {
             val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("simple text", outputTextView.text)
             clipboard.setPrimaryClip(clip)
-//            lifecycleScope.launch() {
-//                val allData = viewModel.getAllTranslationHistory()
-//                Log.i(TAG, "$allData")
-//            }
         }
     }
 
@@ -109,6 +106,34 @@ class TranslateMainActivity : AppCompatActivity() {
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        val inputTextButton = findViewById<EditText>(R.id.edtText)
+        val outputTextView = findViewById<TextView>(R.id.txtVwOutput)
+
+        TranslationObject.currentFromText = inputTextButton.text.toString()
+        TranslationObject.currentToText = outputTextView.text.toString()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val inputTextButton = findViewById<EditText>(R.id.edtText)
+        val outputTextView = findViewById<TextView>(R.id.txtVwOutput)
+
+        // update fields if needed (sent by caller)
+        if (TranslationObject.currentFromText.isNotBlank()) {
+            inputTextButton.setText(
+                TranslationObject.currentFromText,
+                TextView.BufferType.EDITABLE
+            )
+        }
+        if (TranslationObject.currentToText.isNotBlank()) {
+            outputTextView.text = TranslationObject.currentToText
+        }
     }
 
     private fun initObserver() {

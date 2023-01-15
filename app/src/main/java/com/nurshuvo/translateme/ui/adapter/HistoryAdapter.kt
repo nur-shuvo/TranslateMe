@@ -4,11 +4,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.nurshuvo.translateme.R
 import com.nurshuvo.translateme.database.entity.TranslationHistory
+import com.nurshuvo.translateme.util.TranslationObject
 
+val onClickedHistoryItem: MutableLiveData<Boolean> = MutableLiveData()
 
 class HistoryAdapter(
     private val historyList: List<TranslationHistory>
@@ -29,7 +31,11 @@ class HistoryAdapter(
         holder.fromTextView.text = historyList[position].fromText
         holder.translatedTextView.text = historyList[position].translatedText
         holder.parentLayout.setOnClickListener {
-            // Clicked on a row
+            // Clicked on a row item
+            // Go to the main page with the values (fromText and toText)
+            TranslationObject.currentFromText = historyList[position].fromText
+            TranslationObject.currentToText = historyList[position].translatedText
+            onClickedHistoryItem.value = true
         }
     }
 
