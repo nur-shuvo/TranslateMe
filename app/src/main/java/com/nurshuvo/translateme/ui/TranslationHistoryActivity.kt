@@ -14,6 +14,7 @@ import com.nurshuvo.translateme.R
 import com.nurshuvo.translateme.database.entity.TranslationHistory
 import com.nurshuvo.translateme.ui.adapter.HistoryAdapter
 import com.nurshuvo.translateme.ui.adapter.HistoryModel
+import com.nurshuvo.translateme.ui.adapter.countOfSelectionLiveData
 import com.nurshuvo.translateme.ui.adapter.onClickedHistoryItem
 import kotlinx.coroutines.launch
 
@@ -57,6 +58,7 @@ class TranslationHistoryActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.del -> {
+                countOfSelectionLiveData.value = 0 // to update title
                 lifecycleScope.launch {
                     var isAtleastOneSelected = false
                     historyModelList.forEach {
@@ -92,6 +94,13 @@ class TranslationHistoryActivity : AppCompatActivity() {
                 finish()
             }
         }
+        countOfSelectionLiveData.observe(this) { cnt ->
+            if (cnt == 0) {
+                supportActionBar?.title = "History"
+            } else {
+                supportActionBar?.title = "$cnt Selected"
+            }
+        }
     }
 
     private suspend fun updateAdapterWithDB() {
@@ -109,7 +118,13 @@ class TranslationHistoryActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
+        countOfSelectionLiveData.value = 0
         finish()
         return true
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        countOfSelectionLiveData.value = 0
     }
 }

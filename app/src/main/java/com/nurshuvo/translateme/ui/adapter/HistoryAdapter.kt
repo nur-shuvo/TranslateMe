@@ -12,6 +12,7 @@ import com.nurshuvo.translateme.R
 import com.nurshuvo.translateme.util.TranslationObject
 
 val onClickedHistoryItem: MutableLiveData<Boolean> = MutableLiveData()
+val countOfSelectionLiveData: MutableLiveData<Int> = MutableLiveData()
 
 class HistoryAdapter(
     private val historyList: List<HistoryModel>,
@@ -40,6 +41,7 @@ class HistoryAdapter(
                 holder.parentLayout.setBackgroundResource(outValue.resourceId)
                 historyList[position].isSelected = false
                 countOfSelection--
+                countOfSelectionLiveData.value = countOfSelection
             } else {
                 if (countOfSelection == 0) {
                     // Clicked on a row item for go back to the main page
@@ -55,6 +57,7 @@ class HistoryAdapter(
                     )
                     historyList[position].isSelected = true
                     countOfSelection++
+                    countOfSelectionLiveData.value = countOfSelection
                 }
             }
         }
@@ -68,6 +71,7 @@ class HistoryAdapter(
                 )
                 historyList[position].isSelected = true
                 countOfSelection++
+                countOfSelectionLiveData.value = countOfSelection
             }
             return@setOnLongClickListener true
         }
