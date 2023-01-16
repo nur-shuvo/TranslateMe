@@ -10,4 +10,10 @@ class TranslationRepository(private val translationHistoryDao: TranslationHistor
     suspend fun addToTranslationHistory(translationHistory: TranslationHistory) {
         translationHistoryDao.insert(translationHistory)
     }
+    suspend fun deleteHistoryItem(translationHistory: TranslationHistory) {
+        translationHistoryDao.deleteRow(translationHistory)
+    }
+    suspend fun deleteAll() {
+        translationHistoryDao.deleteAll()
+    }
 }
