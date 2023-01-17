@@ -11,7 +11,7 @@
         android:id="@+id/fromText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
+        android:padding="10dp"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -19,7 +19,7 @@
         android:id="@+id/translatedText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
+        android:padding="10dp"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="#0000FF"/>

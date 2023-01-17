@@ -14,6 +14,7 @@ import com.nurshuvo.translateme.util.TranslationObject
 val onClickedHistoryItem: MutableLiveData<Boolean> = MutableLiveData()
 val countOfSelectionLiveData: MutableLiveData<Int> = MutableLiveData()
 
+// TODO: There are some duplicate code blocks, will clean it
 class HistoryAdapter(
     private val historyList: List<HistoryModel>,
     private var countOfSelection: Int
@@ -33,7 +34,21 @@ class HistoryAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.fromTextView.text = historyList[position].fromText
         holder.translatedTextView.text = historyList[position].translatedText
-        holder.parentLayout.setOnClickListener {
+
+        if (historyList[position].isSelected) {
+            holder.parentLayout.background = ColorDrawable(
+                (holder.parentLayout.context.resources).getColor(
+                    R.color.white_back
+                )
+            )
+        } else {
+            val outValue = TypedValue()
+            holder.parentLayout.context.theme
+                .resolveAttribute(android.R.attr.selectableItemBackground, outValue, true)
+            holder.parentLayout.setBackgroundResource(outValue.resourceId)
+        }
+
+        holder.parentLayout.setOnClickListener { // onCLicked
             if (historyList[position].isSelected) {
                 val outValue = TypedValue()
                 holder.parentLayout.context.theme

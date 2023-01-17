@@ -1,9 +1,11 @@
 package com.nurshuvo.translateme.ui
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -58,7 +60,7 @@ class TranslationHistoryActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.del -> {
-                countOfSelectionLiveData.value = 0 // to update title
+                countOfSelectionLiveData.value = 0 // to update action bar title
                 lifecycleScope.launch {
                     var isAtleastOneSelected = false
                     historyModelList.forEach {
@@ -72,12 +74,25 @@ class TranslationHistoryActivity : AppCompatActivity() {
                     }
 
                     if (!isAtleastOneSelected) { // User wants to delete all
-                        // delete all from DB
-                        (application as MyApplication).translationRepository.deleteAll()
+                            AlertDialog.Builder(this@TranslationHistoryActivity)
+                                .setMessage("Do you want to clear all data?")
+                                .setPositiveButton("Yes") { _: DialogInterface, _: Int ->
+                                    lifecycleScope.launch {
+                                        // delete all from DB
+                                        (application as MyApplication).translationRepository.deleteAll()
+                                        // update recycler view adapter with updated model list
+                                        updateAdapterWithDB()
+                                    }
+                                }
+                                .setNegativeButton("No") { _: DialogInterface, _: Int ->
+                                    // Do nothing
+                                }
+                                .create()
+                                .show()
+                    } else {
+                        // update recycler view adapter with updated model list
+                        updateAdapterWithDB()
                     }
-
-                    // update recycler view adapter with updated model list
-                    updateAdapterWithDB()
                 }
 
                 return true
