@@ -2,4 +2,8 @@
     <string name="app_name">TranslateMe</string>
     <string name="your_feedback">Your feedback</string>
     <string name="history">History</string>
+    <string name="translationBnEN">Translator BN-EN</string>
+    <!-- to toggle the open close button of the navigation drawer -->
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
 </resources>

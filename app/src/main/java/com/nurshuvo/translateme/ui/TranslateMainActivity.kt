@@ -6,12 +6,15 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import android.widget.*
 import androidx.activity.viewModels
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.navigation.NavigationView
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.common.model.RemoteModelManager
 import com.google.mlkit.nl.translate.TranslateLanguage
@@ -26,7 +29,6 @@ import com.nurshuvo.translateme.ui.viewmodel.TranslateMainViewModelFactory
 import com.nurshuvo.translateme.util.TranslationObject
 import kotlinx.coroutines.launch
 
-
 private const val TAG = "TranslateMainActivity"
 
 class TranslateMainActivity : AppCompatActivity() {
@@ -35,22 +37,52 @@ class TranslateMainActivity : AppCompatActivity() {
         TranslateMainViewModelFactory((application as MyApplication).translationRepository)
     }
 
+    private var drawerLayout: DrawerLayout? = null
+    private var actionBarDrawerToggle: ActionBarDrawerToggle? = null
+    private var navigationView: NavigationView? = null
+    private var inputTextButton: EditText? = null
+    private var translateButton: Button? = null
+    private var outputTextView: TextView? = null
+    private var copyButton: ImageView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_translate_main)
         setSupportActionBar(findViewById(R.id.my_toolbar))
 
+        drawerLayout = findViewById(R.id.my_drawer_layout)
+        navigationView = findViewById(R.id.nav_view)
+        inputTextButton = findViewById(R.id.edtText)
+        translateButton = findViewById(R.id.btn)
+        outputTextView = findViewById(R.id.txtVwOutput)
+        copyButton = findViewById(R.id.copy_icon)
+
+        setUpNavDrawer()
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.menu_icon_main)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        setOnclickItemsOnNavigationDrawer()
+        setOnClickListenerForTranslateButton()
+        setOnClickListenerForCopyButton()
         initObserver()
         initializeBengaliEnglishModel()
+    }
 
-        val inputTextButton = findViewById<EditText>(R.id.edtText)
-        val translateButton = findViewById<Button>(R.id.btn)
-        val outputTextView = findViewById<TextView>(R.id.txtVwOutput)
+    private fun setOnClickListenerForCopyButton() {
+        copyButton?.setOnClickListener {
+            Log.i(TAG, "Clip board button clicked!")
+            // Gets a handle to the clipboard service.
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("simple text", outputTextView?.text)
+            clipboard.setPrimaryClip(clip)
+        }
+    }
 
-        // Button click for translation
-        translateButton.setOnClickListener {
+    private fun setOnClickListenerForTranslateButton() {
+        translateButton?.setOnClickListener {
             Log.i(TAG, "Translation button clicked!")
-            val fromText = inputTextButton.text.toString()
+            val fromText = inputTextButton?.text.toString()
 
             // API call later when app is ready, as there is a API limit for now.
             // viewModel.translateToEnglish(fromText)
@@ -64,7 +96,7 @@ class TranslateMainActivity : AppCompatActivity() {
             bengaliEnglishTranslator.translate(fromText)
                 .addOnSuccessListener { translatedText ->
                     Log.i(TAG, "Translation successful")
-                    outputTextView.text = translatedText
+                    outputTextView?.text = translatedText
                     lifecycleScope.launch {
                         viewModel.addToTranslationHistory(
                             TranslationHistory(0, fromText, translatedText)
@@ -75,37 +107,36 @@ class TranslateMainActivity : AppCompatActivity() {
                     Log.i(TAG, "Translation error")
                 }
         }
-
-        // handle copy button click
-        findViewById<ImageView>(R.id.copy_icon).setOnClickListener {
-            Log.i(TAG, "Clip board button clicked!")
-            // Gets a handle to the clipboard service.
-            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("simple text", outputTextView.text)
-            clipboard.setPrimaryClip(clip)
-        }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        val findMenuItems = menuInflater
-        findMenuItems.inflate(R.menu.main_menu, menu)
-        return super.onCreateOptionsMenu(menu)
+    private fun setUpNavDrawer() {
+        actionBarDrawerToggle =
+            ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close)
+        drawerLayout?.addDrawerListener(actionBarDrawerToggle!!)
+        actionBarDrawerToggle?.syncState()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.history -> {
-                startActivity(
-                    Intent("com.nurshuvo.translateme.history")
-                )
-                return true
-            }
-            R.id.feedback -> {
-                return true
-            }
-        }
+        return if (actionBarDrawerToggle?.onOptionsItemSelected(item) == true) {
+            true
+        } else super.onOptionsItemSelected(item)
+    }
 
-        return super.onOptionsItemSelected(item)
+    private fun setOnclickItemsOnNavigationDrawer() {
+        navigationView?.setNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.history -> {
+                    startActivity(
+                        Intent("com.nurshuvo.translateme.history")
+                    )
+                }
+                R.id.feedback -> {
+                    // TODO
+                }
+            }
+            drawerLayout?.closeDrawer(GravityCompat.START)
+            true
+        }
     }
 
     override fun onPause() {

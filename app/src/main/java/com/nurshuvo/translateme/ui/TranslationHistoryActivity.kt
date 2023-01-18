@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -82,6 +83,7 @@ class TranslationHistoryActivity : AppCompatActivity() {
                                         (application as MyApplication).translationRepository.deleteAll()
                                         // update recycler view adapter with updated model list
                                         updateAdapterWithDB()
+                                        Toast.makeText(this@TranslationHistoryActivity, "Deleted!", Toast.LENGTH_SHORT).show()
                                     }
                                 }
                                 .setNegativeButton("No") { _: DialogInterface, _: Int ->
@@ -90,6 +92,7 @@ class TranslationHistoryActivity : AppCompatActivity() {
                                 .create()
                                 .show()
                     } else {
+                        Toast.makeText(this@TranslationHistoryActivity, "Deleted!", Toast.LENGTH_SHORT).show()
                         // update recycler view adapter with updated model list
                         updateAdapterWithDB()
                     }
@@ -133,13 +136,27 @@ class TranslationHistoryActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        countOfSelectionLiveData.value = 0
-        finish()
+        if (countOfSelectionLiveData.value == 0) {
+            finish()
+        } else {
+            countOfSelectionLiveData.value = 0
+            // refresh view
+            lifecycleScope.launch {
+                updateAdapterWithDB()
+            }
+        }
         return true
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        countOfSelectionLiveData.value = 0
+        if (countOfSelectionLiveData.value == 0) {
+            finish()
+        } else {
+            countOfSelectionLiveData.value = 0
+            // refresh view
+            lifecycleScope.launch {
+                updateAdapterWithDB()
+            }
+        }
     }
 }
