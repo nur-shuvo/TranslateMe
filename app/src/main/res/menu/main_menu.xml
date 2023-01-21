@@ -4,6 +4,9 @@
         android:id="@+id/history"
         android:title="@string/history" />
     <item
+        android:id="@+id/favorite"
+        android:title="@string/favourites" />
+    <item
         android:id="@+id/feedback"
         android:title="@string/your_feedback" />
 </menu>

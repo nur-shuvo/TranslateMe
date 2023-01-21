@@ -6,4 +6,5 @@
     <!-- to toggle the open close button of the navigation drawer -->
     <string name="nav_open">Open</string>
     <string name="nav_close">Close</string>
+    <string name="favourites">Favourites</string>
 </resources>

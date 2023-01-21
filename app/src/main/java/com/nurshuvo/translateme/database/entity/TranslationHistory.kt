@@ -8,5 +8,6 @@ import androidx.room.PrimaryKey
 data class TranslationHistory(
     @PrimaryKey(autoGenerate = true) val id: Int,
     @ColumnInfo(name = "fromText") val fromText: String,
-    @ColumnInfo(name = "translatedText") val translatedText: String
+    @ColumnInfo(name = "translatedText") val translatedText: String,
+    @ColumnInfo(name = "isFavourite") val isFavourite: Boolean = false
 )

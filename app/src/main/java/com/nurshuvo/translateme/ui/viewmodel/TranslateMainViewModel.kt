@@ -26,6 +26,14 @@ class TranslateMainViewModel(
         translationRepository.addToTranslationHistory(translationHistory)
     }
 
+    suspend fun updateTranslationHistory(fromText: String) {
+        translationRepository.makeItemFavourite(fromText)
+    }
+
+    suspend fun undoFavoriteFromItems(fromText: String) {
+        translationRepository.undoItemFavourite(fromText)
+    }
+
     suspend fun getAllTranslationHistory(): List<TranslationHistory> {
         return translationRepository.getAllTranslationHistory()
     }

@@ -10,10 +10,19 @@ class TranslationRepository(private val translationHistoryDao: TranslationHistor
     suspend fun addToTranslationHistory(translationHistory: TranslationHistory) {
         translationHistoryDao.insert(translationHistory)
     }
+    suspend fun makeItemFavourite(fromText: String) {
+        translationHistoryDao.makeItemFavourite(fromText, true)
+    }
+    suspend fun undoItemFavourite(fromText: String) {
+        translationHistoryDao.makeItemFavourite(fromText, false)
+    }
     suspend fun deleteHistoryItem(translationHistory: TranslationHistory) {
         translationHistoryDao.deleteRow(translationHistory)
     }
     suspend fun deleteAll() {
         translationHistoryDao.deleteAll()
+    }
+    suspend fun unDoAllFavoriteRecords() {
+        translationHistoryDao.undoAllFavoriteItems(true, false)
     }
 }

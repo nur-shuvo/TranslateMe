@@ -22,7 +22,7 @@
         </activity>
 
         <activity
-            android:name=".ui.TranslationHistoryActivity"
+            android:name=".ui.TranslationListActivity"
             android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />

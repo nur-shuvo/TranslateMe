@@ -21,17 +21,24 @@ import com.nurshuvo.translateme.ui.adapter.countOfSelectionLiveData
 import com.nurshuvo.translateme.ui.adapter.onClickedHistoryItem
 import kotlinx.coroutines.launch
 
-class TranslationHistoryActivity : AppCompatActivity() {
+// can be reused for history or favourite page
+class TranslationListActivity : AppCompatActivity() {
 
     // TODO Will move this data to VM.
-    private lateinit var historyModelList: MutableList<HistoryModel>
+    private lateinit var historyOrFavoriteModelList: MutableList<HistoryModel>
+    private var isFavoriteListRequested: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.history_layout)
+        // data from Intent
+        isFavoriteListRequested =
+            intent?.extras?.getBoolean("key_isFavoriteListRequested", false) ?: false
+
         setSupportActionBar(findViewById(R.id.my_toolbar_history))
         supportActionBar?.setHomeAsUpIndicator(R.drawable.action_bar_back_icon)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = if (isFavoriteListRequested) "Favourites" else "History"
 
         initObserver()
 
@@ -64,35 +71,55 @@ class TranslationHistoryActivity : AppCompatActivity() {
                 countOfSelectionLiveData.value = 0 // to update action bar title
                 lifecycleScope.launch {
                     var isAtleastOneSelected = false
-                    historyModelList.forEach {
+                    historyOrFavoriteModelList.forEach {
                         // delete that row from table if selected true
                         if (it.isSelected) { // Delete specific entry
                             isAtleastOneSelected = true
-                            (application as MyApplication).translationRepository.deleteHistoryItem(
-                                TranslationHistory(it.id, it.fromText, it.translatedText)
-                            )
+                            if (isFavoriteListRequested) {
+                                (application as MyApplication).translationRepository.undoItemFavourite(
+                                    it.fromText
+                                )
+                            } else {
+                                (application as MyApplication).translationRepository.deleteHistoryItem(
+                                    TranslationHistory(
+                                        it.id,
+                                        it.fromText,
+                                        it.translatedText,
+                                        it.isFavourite
+                                    )
+                                )
+                            }
                         }
                     }
 
                     if (!isAtleastOneSelected) { // User wants to delete all
-                            AlertDialog.Builder(this@TranslationHistoryActivity)
-                                .setMessage("Do you want to clear all data?")
-                                .setPositiveButton("Yes") { _: DialogInterface, _: Int ->
-                                    lifecycleScope.launch {
-                                        // delete all from DB
+                        AlertDialog.Builder(this@TranslationListActivity)
+                            .setMessage("Do you want to clear all data?")
+                            .setPositiveButton("Yes") { _: DialogInterface, _: Int ->
+                                lifecycleScope.launch {
+                                    if (isFavoriteListRequested) {
+                                        (application as MyApplication).translationRepository.unDoAllFavoriteRecords()
+                                    } else {
                                         (application as MyApplication).translationRepository.deleteAll()
-                                        // update recycler view adapter with updated model list
-                                        updateAdapterWithDB()
-                                        Toast.makeText(this@TranslationHistoryActivity, "Deleted!", Toast.LENGTH_SHORT).show()
                                     }
+
+                                    // update recycler view adapter with updated model list
+                                    updateAdapterWithDB()
+                                    Toast.makeText(
+                                        this@TranslationListActivity,
+                                        "Deleted!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
-                                .setNegativeButton("No") { _: DialogInterface, _: Int ->
-                                    // Do nothing
-                                }
-                                .create()
-                                .show()
+                            }
+                            .setNegativeButton("No") { _: DialogInterface, _: Int ->
+                                // Do nothing
+                            }
+                            .create()
+                            .show()
                     } else {
-                        Toast.makeText(this@TranslationHistoryActivity, "Deleted!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@TranslationListActivity, "Deleted!", Toast.LENGTH_SHORT)
+                            .show()
                         // update recycler view adapter with updated model list
                         updateAdapterWithDB()
                     }
@@ -114,7 +141,7 @@ class TranslationHistoryActivity : AppCompatActivity() {
         }
         countOfSelectionLiveData.observe(this) { cnt ->
             if (cnt == 0) {
-                supportActionBar?.title = "History"
+                supportActionBar?.title = if (isFavoriteListRequested) "Favourites" else "History"
             } else {
                 supportActionBar?.title = "$cnt Selected"
             }
@@ -124,13 +151,31 @@ class TranslationHistoryActivity : AppCompatActivity() {
     private suspend fun updateAdapterWithDB() {
         val allHistoryData =
             (application as MyApplication).translationRepository.getAllTranslationHistory()
-        historyModelList = mutableListOf()
+        historyOrFavoriteModelList = mutableListOf()
         allHistoryData.forEach {
-            historyModelList.add(
-                HistoryModel(it.id, it.fromText, it.translatedText, false)
-            )
+            if (isFavoriteListRequested && it.isFavourite) {
+                historyOrFavoriteModelList.add(
+                    HistoryModel(
+                        it.id,
+                        it.fromText,
+                        it.translatedText,
+                        it.isFavourite,
+                        false
+                    )
+                )
+            } else if (!isFavoriteListRequested) {
+                historyOrFavoriteModelList.add(
+                    HistoryModel(
+                        it.id,
+                        it.fromText,
+                        it.translatedText,
+                        it.isFavourite,
+                        false
+                    )
+                )
+            }
         }
-        val adapter = HistoryAdapter(historyModelList, 0)
+        val adapter = HistoryAdapter(historyOrFavoriteModelList, 0)
         (findViewById<View>(R.id.history_recycler_view) as RecyclerView).adapter =
             adapter
     }

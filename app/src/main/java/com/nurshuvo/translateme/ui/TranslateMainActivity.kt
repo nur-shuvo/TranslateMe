@@ -16,9 +16,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.navigation.NavigationView
 import com.google.mlkit.common.model.DownloadConditions
-import com.google.mlkit.common.model.RemoteModelManager
 import com.google.mlkit.nl.translate.TranslateLanguage
-import com.google.mlkit.nl.translate.TranslateRemoteModel
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
 import com.nurshuvo.translateme.MyApplication
@@ -40,10 +38,11 @@ class TranslateMainActivity : AppCompatActivity() {
     private var drawerLayout: DrawerLayout? = null
     private var actionBarDrawerToggle: ActionBarDrawerToggle? = null
     private var navigationView: NavigationView? = null
-    private var inputTextButton: EditText? = null
-    private var translateButton: Button? = null
+    private var inputTextEditText: EditText? = null
+    private var translateButton: ImageView? = null
     private var outputTextView: TextView? = null
     private var copyButton: ImageView? = null
+    private var favButton: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,10 +51,11 @@ class TranslateMainActivity : AppCompatActivity() {
 
         drawerLayout = findViewById(R.id.my_drawer_layout)
         navigationView = findViewById(R.id.nav_view)
-        inputTextButton = findViewById(R.id.edtText)
+        inputTextEditText = findViewById(R.id.edtText)
         translateButton = findViewById(R.id.btn)
         outputTextView = findViewById(R.id.txtVwOutput)
         copyButton = findViewById(R.id.copy_icon)
+        favButton = findViewById(R.id.fav_icon)
 
         setUpNavDrawer()
         supportActionBar?.setHomeButtonEnabled(true)
@@ -65,13 +65,33 @@ class TranslateMainActivity : AppCompatActivity() {
         setOnclickItemsOnNavigationDrawer()
         setOnClickListenerForTranslateButton()
         setOnClickListenerForCopyButton()
+        setOnCLickOnFavButton()
         initObserver()
-        initializeBengaliEnglishModel()
+        // initializeBengaliEnglishModel()
+    }
+
+    private fun setOnCLickOnFavButton() {
+        favButton?.setOnClickListener {
+            Log.i(TAG, "Favourite button clicked!")
+            if (outputTextView?.text.isNullOrBlank() || inputTextEditText?.text.isNullOrBlank()) {
+                return@setOnClickListener
+            }
+
+            Toast.makeText(this@TranslateMainActivity, "Added to Favourites!", Toast.LENGTH_SHORT)
+                .show()
+            // update existing records in DB as favourite = true in history table
+            lifecycleScope.launch {
+                viewModel.updateTranslationHistory(inputTextEditText?.text.toString())
+            }
+        }
     }
 
     private fun setOnClickListenerForCopyButton() {
         copyButton?.setOnClickListener {
             Log.i(TAG, "Clip board button clicked!")
+            if (outputTextView?.text.isNullOrBlank()) {
+                return@setOnClickListener
+            }
             // Gets a handle to the clipboard service.
             val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("simple text", outputTextView?.text)
@@ -82,7 +102,11 @@ class TranslateMainActivity : AppCompatActivity() {
     private fun setOnClickListenerForTranslateButton() {
         translateButton?.setOnClickListener {
             Log.i(TAG, "Translation button clicked!")
-            val fromText = inputTextButton?.text.toString()
+            val fromText = inputTextEditText?.text.toString()
+
+            if (fromText.isBlank()) {
+                return@setOnClickListener
+            }
 
             // API call later when app is ready, as there is a API limit for now.
             // viewModel.translateToEnglish(fromText)
@@ -93,18 +117,28 @@ class TranslateMainActivity : AppCompatActivity() {
                 .setTargetLanguage(TranslateLanguage.ENGLISH)
                 .build()
             val bengaliEnglishTranslator = Translation.getClient(options)
-            bengaliEnglishTranslator.translate(fromText)
-                .addOnSuccessListener { translatedText ->
-                    Log.i(TAG, "Translation successful")
-                    outputTextView?.text = translatedText
-                    lifecycleScope.launch {
-                        viewModel.addToTranslationHistory(
-                            TranslationHistory(0, fromText, translatedText)
-                        )
-                    }
+            val conditions = DownloadConditions.Builder()
+                .requireWifi()
+                .build()
+            bengaliEnglishTranslator.downloadModelIfNeeded(conditions)
+                .addOnSuccessListener {
+                    bengaliEnglishTranslator.translate(fromText)
+                        .addOnSuccessListener { translatedText ->
+                            Log.i(TAG, "Translation successful")
+                            outputTextView?.text = translatedText
+                            lifecycleScope.launch {
+                                viewModel.addToTranslationHistory(
+                                    TranslationHistory(0, fromText, translatedText)
+                                )
+                            }
+                        }
+                        .addOnFailureListener {
+                            Log.i(TAG, "Translation error")
+                            // Model could n’t be downloaded or other internal error.
+                        }
                 }
-                .addOnFailureListener {
-                    Log.i(TAG, "Translation error")
+                .addOnFailureListener { exception ->
+                    Log.e(TAG, "$exception")
                 }
         }
     }
@@ -128,6 +162,13 @@ class TranslateMainActivity : AppCompatActivity() {
                 R.id.history -> {
                     startActivity(
                         Intent("com.nurshuvo.translateme.history")
+                            .putExtra("key_isFavoriteListRequested", false)
+                    )
+                }
+                R.id.favorite -> {
+                    startActivity(
+                        Intent("com.nurshuvo.translateme.history")
+                            .putExtra("key_isFavoriteListRequested", true)
                     )
                 }
                 R.id.feedback -> {
@@ -171,44 +212,6 @@ class TranslateMainActivity : AppCompatActivity() {
         viewModel.translatedText.observe(this) { value ->
             findViewById<TextView>(R.id.txtVwOutput).text = value
         }
-    }
-
-    private fun initializeBengaliEnglishModel() {
-        val modelManager = RemoteModelManager.getInstance()
-
-        // Get translation models stored on the device.
-        modelManager.getDownloadedModels(TranslateRemoteModel::class.java)
-            .addOnSuccessListener { models ->
-                models.forEach {
-                    Log.i(TAG, " ${it.language} ")
-                    if (it.language == TranslateLanguage.BENGALI || it.language == TranslateLanguage.ENGLISH) {
-                        Log.e(TAG, "Already model installed")
-                    } else {
-                        Toast.makeText(this, "Model download started!", Toast.LENGTH_LONG).show()
-                        fetchBengaliEnglishModel()
-                    }
-                }
-            }
-            .addOnFailureListener {
-                // Error
-                Log.e(TAG, "Download error")
-            }
-    }
-
-    private fun fetchBengaliEnglishModel() {
-        val modelManager = RemoteModelManager.getInstance()
-        // Download the BengaliEnglish model.
-        val bengaliModel = TranslateRemoteModel.Builder(TranslateLanguage.BENGALI).build()
-        val conditions = DownloadConditions.Builder()
-            .requireWifi()
-            .build()
-        modelManager.download(bengaliModel, conditions)
-            .addOnSuccessListener {
-                // Model downloaded.
-            }
-            .addOnFailureListener {
-                // Error.
-            }
     }
 }
 

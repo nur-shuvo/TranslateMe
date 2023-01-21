@@ -16,7 +16,7 @@ val countOfSelectionLiveData: MutableLiveData<Int> = MutableLiveData()
 
 // TODO: There are some duplicate code blocks, will clean it
 class HistoryAdapter(
-    private val historyList: List<HistoryModel>,
+    private val historhistoryOrFavoriteModelList: List<HistoryModel>,
     private var countOfSelection: Int
 ) : RecyclerView.Adapter<ViewHolder>() {
 
@@ -32,10 +32,10 @@ class HistoryAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.fromTextView.text = historyList[position].fromText
-        holder.translatedTextView.text = historyList[position].translatedText
+        holder.fromTextView.text = historhistoryOrFavoriteModelList[position].fromText
+        holder.translatedTextView.text = historhistoryOrFavoriteModelList[position].translatedText
 
-        if (historyList[position].isSelected) {
+        if (historhistoryOrFavoriteModelList[position].isSelected) {
             holder.parentLayout.background = ColorDrawable(
                 (holder.parentLayout.context.resources).getColor(
                     R.color.white_back
@@ -49,20 +49,20 @@ class HistoryAdapter(
         }
 
         holder.parentLayout.setOnClickListener { // onCLicked
-            if (historyList[position].isSelected) {
+            if (historhistoryOrFavoriteModelList[position].isSelected) {
                 val outValue = TypedValue()
                 holder.parentLayout.context.theme
                     .resolveAttribute(android.R.attr.selectableItemBackground, outValue, true)
                 holder.parentLayout.setBackgroundResource(outValue.resourceId)
-                historyList[position].isSelected = false
+                historhistoryOrFavoriteModelList[position].isSelected = false
                 countOfSelection--
                 countOfSelectionLiveData.value = countOfSelection
             } else {
                 if (countOfSelection == 0) {
                     // Clicked on a row item for go back to the main page
                     // Go to the main page with the values (fromText and toText)
-                    TranslationObject.currentFromText = historyList[position].fromText
-                    TranslationObject.currentToText = historyList[position].translatedText
+                    TranslationObject.currentFromText = historhistoryOrFavoriteModelList[position].fromText
+                    TranslationObject.currentToText = historhistoryOrFavoriteModelList[position].translatedText
                     onClickedHistoryItem.value = true
                 } else { // countOfSelection > 0
                     holder.parentLayout.background = ColorDrawable(
@@ -70,7 +70,7 @@ class HistoryAdapter(
                             R.color.white_back
                         )
                     )
-                    historyList[position].isSelected = true
+                    historhistoryOrFavoriteModelList[position].isSelected = true
                     countOfSelection++
                     countOfSelectionLiveData.value = countOfSelection
                 }
@@ -78,13 +78,13 @@ class HistoryAdapter(
         }
 
         holder.parentLayout.setOnLongClickListener {
-            if (!historyList[position].isSelected) {
+            if (!historhistoryOrFavoriteModelList[position].isSelected) {
                 holder.parentLayout.background = ColorDrawable(
                     (holder.parentLayout.context.resources).getColor(
                         R.color.white_back
                     )
                 )
-                historyList[position].isSelected = true
+                historhistoryOrFavoriteModelList[position].isSelected = true
                 countOfSelection++
                 countOfSelectionLiveData.value = countOfSelection
             }
@@ -93,7 +93,7 @@ class HistoryAdapter(
     }
 
     override fun getItemCount(): Int {
-        return historyList.size
+        return historhistoryOrFavoriteModelList.size
     }
 }
 

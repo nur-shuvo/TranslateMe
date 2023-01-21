@@ -47,20 +47,18 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <Button
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginBottom="15dp"
-                android:backgroundTint="#525453"
-                android:text="Translate"
-                android:textAllCaps="false"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="end"
+                android:layout_marginEnd="20dp"
+                android:background="#BCEAEA"
+                android:foreground="?selectableItemBackground"
+                android:src="@drawable/translate_icon"
                 android:textColor="@color/white"
-                android:textStyle="bold" />
+                app:contentPadding="10dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent" />
 
             <TextView
                 android:id="@+id/txtVwOutput"
@@ -72,20 +70,42 @@
                 android:paddingTop="5dp"
                 android:paddingEnd="5dp"
                 android:paddingBottom="5dp"
+                android:textColor="@color/white"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                app:titleTextColor="@color/white" />
+                android:textStyle="bold" />
 
-            <ImageView
-                android:id="@+id/copy_icon"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:clickable="true"
-                android:foreground="?selectableItemBackground"
-                android:scaleType="centerCrop"
-                android:src="@drawable/clipboard_copy_logo" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="50dp"
+                android:layout_marginEnd="50dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/fav_icon"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:background="#BCEAEA"
+                    android:foreground="?selectableItemBackground"
+                    android:src="@drawable/fav_icon"
+                    app:contentPadding="10dp"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent" />
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/copy_icon"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:background="#BCEAEA"
+                    android:foreground="?selectableItemBackground"
+                    android:src="@drawable/copy_icon"
+                    app:contentPadding="10dp"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
