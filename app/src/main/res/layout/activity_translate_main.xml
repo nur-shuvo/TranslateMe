@@ -28,43 +28,60 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="2dp"
-            android:layout_marginEnd="2dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="16dp"
             android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/edtText"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:layout_margin="10dp"
-                android:background="#F5EEFF"
-                android:gravity="top"
-                android:hint="Type here..."
-                android:paddingStart="5dp"
-                android:paddingTop="5dp"
-                android:paddingEnd="5dp"
-                android:paddingBottom="5dp"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:layout_height="270dp"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/edtText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="10dp"
+                    android:background="#F5EEFF"
+                    android:gravity="top"
+                    android:hint="Type here..."
+                    android:padding="5dp"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/contentPaste"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="-50dp"
+                    android:background="#BCEAEA"
+                    android:foreground="?selectableItemBackground"
+                    android:src="@drawable/ic_outline_content_paste"
+                    android:textColor="@color/white"
+                    app:contentPadding="5dp"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent" />
+            </LinearLayout>
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/btn"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_gravity="end"
-                android:layout_marginEnd="20dp"
+                android:layout_gravity="center"
                 android:background="#BCEAEA"
                 android:foreground="?selectableItemBackground"
-                android:src="@drawable/translate_icon"
+                android:src="@drawable/translate_button_icon"
                 android:textColor="@color/white"
-                app:contentPadding="10dp"
+                app:contentPadding="2dp"
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent" />
 
             <TextView
                 android:id="@+id/txtVwOutput"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:layout_margin="10dp"
+                android:layout_height="270dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="14dp"
                 android:background="#00AEAD"
                 android:paddingStart="5dp"
                 android:paddingTop="5dp"
@@ -74,38 +91,44 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <FrameLayout
+                android:id="@+id/frame_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="50dp"
-                android:layout_marginEnd="50dp"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:visibility="invisible">
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/fav_icon"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="10dp"
-                    android:background="#BCEAEA"
-                    android:foreground="?selectableItemBackground"
-                    android:src="@drawable/fav_icon"
-                    app:contentPadding="10dp"
-                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center">
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/copy_icon"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
-                    android:background="#BCEAEA"
-                    android:foreground="?selectableItemBackground"
-                    android:src="@drawable/copy_icon"
-                    app:contentPadding="10dp"
-                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent" />
-            </LinearLayout>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/fav_icon"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:background="#BCEAEA"
+                        android:foreground="?selectableItemBackground"
+                        android:src="@drawable/fav_icon"
+                        app:contentPadding="10dp"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/copy_icon"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="20dp"
+                        android:background="#BCEAEA"
+                        android:foreground="?selectableItemBackground"
+                        android:src="@drawable/copy_icon"
+                        app:contentPadding="10dp"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent" />
+                </LinearLayout>
+            </FrameLayout>
         </LinearLayout>
     </LinearLayout>
 

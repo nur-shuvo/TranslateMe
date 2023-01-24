@@ -7,11 +7,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.navigation.NavigationView
@@ -40,9 +42,11 @@ class TranslateMainActivity : AppCompatActivity() {
     private var navigationView: NavigationView? = null
     private var inputTextEditText: EditText? = null
     private var translateButton: ImageView? = null
+    private var contentPasteOrCloseButton: ImageView? = null
     private var outputTextView: TextView? = null
     private var copyButton: ImageView? = null
     private var favButton: ImageView? = null
+    private var frameLayout: FrameLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,9 +57,11 @@ class TranslateMainActivity : AppCompatActivity() {
         navigationView = findViewById(R.id.nav_view)
         inputTextEditText = findViewById(R.id.edtText)
         translateButton = findViewById(R.id.btn)
+        contentPasteOrCloseButton = findViewById(R.id.contentPaste)
         outputTextView = findViewById(R.id.txtVwOutput)
         copyButton = findViewById(R.id.copy_icon)
         favButton = findViewById(R.id.fav_icon)
+        frameLayout = findViewById(R.id.frame_layout)
 
         setUpNavDrawer()
         supportActionBar?.setHomeButtonEnabled(true)
@@ -66,8 +72,37 @@ class TranslateMainActivity : AppCompatActivity() {
         setOnClickListenerForTranslateButton()
         setOnClickListenerForCopyButton()
         setOnCLickOnFavButton()
+        setOnCLickOnContentPasteOrCloseButton()
+        setListenerOnInputOutPutView()
         initObserver()
         // initializeBengaliEnglishModel()
+    }
+
+    private fun setOnCLickOnContentPasteOrCloseButton() {
+        contentPasteOrCloseButton?.setOnClickListener() {
+            if (inputTextEditText?.text?.isNotEmpty() == true) {
+                inputTextEditText?.setText("")
+            } else {
+                // paste from clipboard copy
+                val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                inputTextEditText?.setText(clipboard.text)
+            }
+        }
+    }
+
+    private fun setListenerOnInputOutPutView() {
+        inputTextEditText?.addTextChangedListener() {
+            if (it?.isNotEmpty() == true) {
+                contentPasteOrCloseButton?.setImageResource(R.drawable.ic_baseline_close)
+            } else {
+                contentPasteOrCloseButton?.setImageResource(R.drawable.ic_outline_content_paste)
+            }
+        }
+        outputTextView?.addTextChangedListener {
+            if (it?.isNotEmpty() == true) {
+                frameLayout?.visibility = View.VISIBLE
+            }
+        }
     }
 
     private fun setOnCLickOnFavButton() {
