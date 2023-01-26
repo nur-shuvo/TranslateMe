@@ -22,6 +22,8 @@ class TranslateMainViewModel(
     val translatedText: LiveData<String>
         get() = _translatedText
 
+    var isBengaliToEnglish = true
+
     suspend fun addToTranslationHistory(translationHistory: TranslationHistory) {
         translationRepository.addToTranslationHistory(translationHistory)
     }

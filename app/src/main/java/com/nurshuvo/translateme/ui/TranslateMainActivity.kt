@@ -47,6 +47,9 @@ class TranslateMainActivity : AppCompatActivity() {
     private var copyButton: ImageView? = null
     private var favButton: ImageView? = null
     private var frameLayout: FrameLayout? = null
+    private var firstLanguage: TextView? = null
+    private var toggleLanguage: ImageView? = null
+    private var secondLanguage: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +65,9 @@ class TranslateMainActivity : AppCompatActivity() {
         copyButton = findViewById(R.id.copy_icon)
         favButton = findViewById(R.id.fav_icon)
         frameLayout = findViewById(R.id.frame_layout)
+        firstLanguage = findViewById(R.id.firstLanguage)
+        toggleLanguage = findViewById(R.id.ToggleLanguage)
+        secondLanguage = findViewById(R.id.secondLanguage)
 
         setUpNavDrawer()
         supportActionBar?.setHomeButtonEnabled(true)
@@ -72,10 +78,25 @@ class TranslateMainActivity : AppCompatActivity() {
         setOnClickListenerForTranslateButton()
         setOnClickListenerForCopyButton()
         setOnCLickOnFavButton()
+        setOnCLickOnToggleButton()
         setOnCLickOnContentPasteOrCloseButton()
         setListenerOnInputOutPutView()
         initObserver()
         // initializeBengaliEnglishModel()
+    }
+
+    private fun setOnCLickOnToggleButton() {
+        toggleLanguage?.setOnClickListener() {
+            if (firstLanguage?.text == "Bengali") {
+                firstLanguage?.text = "English"
+                secondLanguage?.text = "Bengali"
+                viewModel.isBengaliToEnglish = false
+            } else {
+                firstLanguage?.text = "Bengali"
+                secondLanguage?.text = "English"
+                viewModel.isBengaliToEnglish = true
+            }
+        }
     }
 
     private fun setOnCLickOnContentPasteOrCloseButton() {
@@ -148,8 +169,8 @@ class TranslateMainActivity : AppCompatActivity() {
 
             // Translate by local ML model
             val options = TranslatorOptions.Builder()
-                .setSourceLanguage(TranslateLanguage.BENGALI)
-                .setTargetLanguage(TranslateLanguage.ENGLISH)
+                .setSourceLanguage(if (viewModel.isBengaliToEnglish) TranslateLanguage.BENGALI else TranslateLanguage.ENGLISH)
+                .setTargetLanguage(if (viewModel.isBengaliToEnglish) TranslateLanguage.ENGLISH else TranslateLanguage.BENGALI)
                 .build()
             val bengaliEnglishTranslator = Translation.getClient(options)
             val conditions = DownloadConditions.Builder()
