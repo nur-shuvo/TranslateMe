@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -16,6 +17,8 @@ import androidx.core.view.GravityCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.navigation.NavigationView
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
@@ -28,6 +31,7 @@ import com.nurshuvo.translateme.ui.viewmodel.TranslateMainViewModel
 import com.nurshuvo.translateme.ui.viewmodel.TranslateMainViewModelFactory
 import com.nurshuvo.translateme.util.TranslationObject
 import kotlinx.coroutines.launch
+import pl.droidsonroids.gif.GifImageView
 
 private const val TAG = "TranslateMainActivity"
 
@@ -200,6 +204,14 @@ class TranslateMainActivity : AppCompatActivity() {
     }
 
     private fun setUpNavDrawer() {
+        // set header layout logo
+        val v = (navigationView?.getHeaderView(0) as ViewGroup).getChildAt(0) as GifImageView
+        Glide.with(this)
+            .load(R.drawable.app_logo)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .circleCrop()
+            .into(v)
+
         actionBarDrawerToggle =
             ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close)
         drawerLayout?.addDrawerListener(actionBarDrawerToggle!!)
