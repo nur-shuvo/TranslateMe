@@ -1,10 +1,12 @@
 package com.nurshuvo.translateme.ui
 
+import android.R.attr
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.speech.RecognizerIntent
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -32,8 +34,11 @@ import com.nurshuvo.translateme.ui.viewmodel.TranslateMainViewModelFactory
 import com.nurshuvo.translateme.util.TranslationObject
 import kotlinx.coroutines.launch
 import pl.droidsonroids.gif.GifImageView
+import java.util.*
+
 
 private const val TAG = "TranslateMainActivity"
+private const val REQUEST_CODE_SPEECH_INPUT = 1
 
 class TranslateMainActivity : AppCompatActivity() {
 
@@ -54,6 +59,7 @@ class TranslateMainActivity : AppCompatActivity() {
     private var firstLanguage: TextView? = null
     private var toggleLanguage: ImageView? = null
     private var secondLanguage: TextView? = null
+    private var ivMic: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +78,7 @@ class TranslateMainActivity : AppCompatActivity() {
         firstLanguage = findViewById(R.id.firstLanguage)
         toggleLanguage = findViewById(R.id.ToggleLanguage)
         secondLanguage = findViewById(R.id.secondLanguage)
+        ivMic = findViewById(R.id.iv_mic);
 
         setUpNavDrawer()
         supportActionBar?.setHomeButtonEnabled(true)
@@ -84,9 +91,50 @@ class TranslateMainActivity : AppCompatActivity() {
         setOnCLickOnFavButton()
         setOnCLickOnToggleButton()
         setOnCLickOnContentPasteOrCloseButton()
+        setOnclickOnMicView()
         setListenerOnInputOutPutView()
         initObserver()
-        // initializeBengaliEnglishModel()
+    }
+
+    private fun setOnclickOnMicView() {
+        ivMic?.setOnClickListener {
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            intent.putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            )
+            intent.putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE,
+                if (viewModel.isBengaliToEnglish) "bn-BD"
+                else Locale.getDefault()
+            )
+            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak to text")
+            try {
+                startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT)
+            } catch (e: Exception) {
+                Toast.makeText(this, " " + e.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_SPEECH_INPUT) {
+            if (resultCode == RESULT_OK) {
+                val result = data?.getStringArrayListExtra(
+                    RecognizerIntent.EXTRA_RESULTS
+                )
+                if (result != null && result.count() > 0) {
+                    inputTextEditText?.postDelayed(
+                        {
+                            inputTextEditText?.setText(result[0])
+                            // consider translate button is clicked
+                            handleOnclickTranslateButton()
+                        }, 100
+                    )
+                }
+            }
+        }
     }
 
     private fun setOnCLickOnToggleButton() {
@@ -161,46 +209,50 @@ class TranslateMainActivity : AppCompatActivity() {
 
     private fun setOnClickListenerForTranslateButton() {
         translateButton?.setOnClickListener {
-            Log.i(TAG, "Translation button clicked!")
-            val fromText = inputTextEditText?.text.toString()
-
-            if (fromText.isBlank()) {
-                return@setOnClickListener
-            }
-
-            // API call later when app is ready, as there is a API limit for now.
-            // viewModel.translateToEnglish(fromText)
-
-            // Translate by local ML model
-            val options = TranslatorOptions.Builder()
-                .setSourceLanguage(if (viewModel.isBengaliToEnglish) TranslateLanguage.BENGALI else TranslateLanguage.ENGLISH)
-                .setTargetLanguage(if (viewModel.isBengaliToEnglish) TranslateLanguage.ENGLISH else TranslateLanguage.BENGALI)
-                .build()
-            val bengaliEnglishTranslator = Translation.getClient(options)
-            val conditions = DownloadConditions.Builder()
-                .requireWifi()
-                .build()
-            bengaliEnglishTranslator.downloadModelIfNeeded(conditions)
-                .addOnSuccessListener {
-                    bengaliEnglishTranslator.translate(fromText)
-                        .addOnSuccessListener { translatedText ->
-                            Log.i(TAG, "Translation successful")
-                            outputTextView?.text = translatedText
-                            lifecycleScope.launch {
-                                viewModel.addToTranslationHistory(
-                                    TranslationHistory(0, fromText, translatedText)
-                                )
-                            }
-                        }
-                        .addOnFailureListener {
-                            Log.i(TAG, "Translation error")
-                            // Model could n’t be downloaded or other internal error.
-                        }
-                }
-                .addOnFailureListener { exception ->
-                    Log.e(TAG, "$exception")
-                }
+            handleOnclickTranslateButton()
         }
+    }
+
+    private fun handleOnclickTranslateButton() {
+        Log.i(TAG, "Translation button clicked!")
+        val fromText = inputTextEditText?.text.toString()
+
+        if (fromText.isBlank()) {
+            return
+        }
+
+        // API call later when app is ready, as there is a API limit for now.
+        // viewModel.translateToEnglish(fromText)
+
+        // Translate by local ML model
+        val options = TranslatorOptions.Builder()
+            .setSourceLanguage(if (viewModel.isBengaliToEnglish) TranslateLanguage.BENGALI else TranslateLanguage.ENGLISH)
+            .setTargetLanguage(if (viewModel.isBengaliToEnglish) TranslateLanguage.ENGLISH else TranslateLanguage.BENGALI)
+            .build()
+        val bengaliEnglishTranslator = Translation.getClient(options)
+        val conditions = DownloadConditions.Builder()
+            .requireWifi()
+            .build()
+        bengaliEnglishTranslator.downloadModelIfNeeded(conditions)
+            .addOnSuccessListener {
+                bengaliEnglishTranslator.translate(fromText)
+                    .addOnSuccessListener { translatedText ->
+                        Log.i(TAG, "Translation successful")
+                        outputTextView?.text = translatedText
+                        lifecycleScope.launch {
+                            viewModel.addToTranslationHistory(
+                                TranslationHistory(0, fromText, translatedText)
+                            )
+                        }
+                    }
+                    .addOnFailureListener {
+                        Log.i(TAG, "Translation error")
+                        // Model could n’t be downloaded or other internal error.
+                    }
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "$exception")
+            }
     }
 
     private fun setUpNavDrawer() {
