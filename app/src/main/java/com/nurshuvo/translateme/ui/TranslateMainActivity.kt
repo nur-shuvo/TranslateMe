@@ -30,8 +30,8 @@ import com.nurshuvo.translateme.MyApplication
 import com.nurshuvo.translateme.R
 import com.nurshuvo.translateme.database.entity.TranslationHistory
 import com.nurshuvo.translateme.ui.viewmodel.TranslateMainViewModel
-import com.nurshuvo.translateme.ui.viewmodel.TranslateMainViewModelFactory
 import com.nurshuvo.translateme.util.TranslationObject
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import pl.droidsonroids.gif.GifImageView
 import java.util.*
@@ -40,12 +40,10 @@ import java.util.*
 private const val TAG = "TranslateMainActivity"
 private const val REQUEST_CODE_SPEECH_INPUT = 1
 
+@AndroidEntryPoint
 class TranslateMainActivity : AppCompatActivity() {
 
-    private val viewModel: TranslateMainViewModel by viewModels {
-        TranslateMainViewModelFactory((application as MyApplication).translationRepository)
-    }
-
+    private val viewModel: TranslateMainViewModel by viewModels()
     private var drawerLayout: DrawerLayout? = null
     private var actionBarDrawerToggle: ActionBarDrawerToggle? = null
     private var navigationView: NavigationView? = null

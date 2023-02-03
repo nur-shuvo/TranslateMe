@@ -14,19 +14,26 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.nurshuvo.translateme.MyApplication
 import com.nurshuvo.translateme.R
+import com.nurshuvo.translateme.data.repository.TranslationRepository
 import com.nurshuvo.translateme.database.entity.TranslationHistory
 import com.nurshuvo.translateme.ui.adapter.HistoryAdapter
 import com.nurshuvo.translateme.ui.adapter.HistoryModel
 import com.nurshuvo.translateme.ui.adapter.countOfSelectionLiveData
 import com.nurshuvo.translateme.ui.adapter.onClickedHistoryItem
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 // can be reused for history or favourite page
+@AndroidEntryPoint
 class TranslationListActivity : AppCompatActivity() {
 
     // TODO Will move this data to VM.
     private lateinit var historyOrFavoriteModelList: MutableList<HistoryModel>
     private var isFavoriteListRequested: Boolean = false
+
+    @Inject
+    lateinit var translationRepository: TranslationRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,11 +83,11 @@ class TranslationListActivity : AppCompatActivity() {
                         if (it.isSelected) { // Delete specific entry
                             isAtleastOneSelected = true
                             if (isFavoriteListRequested) {
-                                (application as MyApplication).translationRepository.undoItemFavourite(
+                                translationRepository.undoItemFavourite(
                                     it.fromText
                                 )
                             } else {
-                                (application as MyApplication).translationRepository.deleteHistoryItem(
+                                translationRepository.deleteHistoryItem(
                                     TranslationHistory(
                                         it.id,
                                         it.fromText,
@@ -98,9 +105,9 @@ class TranslationListActivity : AppCompatActivity() {
                             .setPositiveButton("Yes") { _: DialogInterface, _: Int ->
                                 lifecycleScope.launch {
                                     if (isFavoriteListRequested) {
-                                        (application as MyApplication).translationRepository.unDoAllFavoriteRecords()
+                                        translationRepository.unDoAllFavoriteRecords()
                                     } else {
-                                        (application as MyApplication).translationRepository.deleteAll()
+                                        translationRepository.deleteAll()
                                     }
 
                                     // update recycler view adapter with updated model list
@@ -150,7 +157,7 @@ class TranslationListActivity : AppCompatActivity() {
 
     private suspend fun updateAdapterWithDB() {
         val allHistoryData =
-            (application as MyApplication).translationRepository.getAllTranslationHistory()
+            translationRepository.getAllTranslationHistory()
         historyOrFavoriteModelList = mutableListOf()
         allHistoryData.forEach {
             if (isFavoriteListRequested && it.isFavourite) {

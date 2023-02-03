@@ -5,16 +5,19 @@ import androidx.lifecycle.*
 import com.nurshuvo.translateme.data.repository.TranslationRepository
 import com.nurshuvo.translateme.database.entity.TranslationHistory
 import com.nurshuvo.translateme.network.Api
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import java.lang.Exception
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import javax.inject.Inject
 
 private const val TAG = "TranslateMainViewModel"
 
-class TranslateMainViewModel(
+@HiltViewModel
+class TranslateMainViewModel @Inject constructor(
     private val translationRepository: TranslationRepository
 ) : ViewModel() {
 
@@ -52,15 +55,5 @@ class TranslateMainViewModel(
                 Log.e(TAG, "exception: translateToEnglish")
             }
         }
-    }
-}
-
-class TranslateMainViewModelFactory(private val repository: TranslationRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(TranslateMainViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return TranslateMainViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

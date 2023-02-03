@@ -7,12 +7,5 @@ import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class MyApplication: Application() {
-
-    val translationDatabase: TranslationDatabase by lazy {
-        TranslationDatabase.getDatabase(this)
-    }
-
-    val translationRepository: TranslationRepository by lazy {
-        TranslationRepository(translationDatabase.translationHistoryDao())
-    }
+    // add application level task if needed
 }

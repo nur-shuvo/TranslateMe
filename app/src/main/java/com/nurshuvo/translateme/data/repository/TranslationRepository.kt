@@ -2,8 +2,11 @@ package com.nurshuvo.translateme.data.repository
 
 import com.nurshuvo.translateme.database.dao.TranslationHistoryDao
 import com.nurshuvo.translateme.database.entity.TranslationHistory
+import javax.inject.Inject
 
-class TranslationRepository(private val translationHistoryDao: TranslationHistoryDao) {
+class TranslationRepository @Inject constructor(
+    private val translationHistoryDao: TranslationHistoryDao
+) {
     suspend fun getAllTranslationHistory(): List<TranslationHistory> {
         return translationHistoryDao.getAll()
     }
