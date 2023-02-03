@@ -1,4 +1,4 @@
-package com.nurshuvo.translateme.di
+package com.nurshuvo.translateme.database.di
 
 import android.content.Context
 import androidx.room.Room
