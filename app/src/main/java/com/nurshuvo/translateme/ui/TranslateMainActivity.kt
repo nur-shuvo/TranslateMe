@@ -109,7 +109,7 @@ class TranslateMainActivity : AppCompatActivity() {
             try {
                 startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT)
             } catch (e: Exception) {
-                Toast.makeText(this, " " + e.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "  " + e.message, Toast.LENGTH_SHORT).show()
             }
         }
     }
