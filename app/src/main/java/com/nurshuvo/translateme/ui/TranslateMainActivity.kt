@@ -1,6 +1,5 @@
 package com.nurshuvo.translateme.ui
 
-import android.R.attr
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -29,13 +28,13 @@ import com.google.mlkit.nl.translate.TranslatorOptions
 import com.nurshuvo.translateme.MyApplication
 import com.nurshuvo.translateme.R
 import com.nurshuvo.translateme.database.entity.TranslationHistory
+import com.nurshuvo.translateme.ui.utils.closeIme
 import com.nurshuvo.translateme.ui.viewmodel.TranslateMainViewModel
 import com.nurshuvo.translateme.util.TranslationObject
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import pl.droidsonroids.gif.GifImageView
 import java.util.*
-
 
 private const val TAG = "TranslateMainActivity"
 private const val REQUEST_CODE_SPEECH_INPUT = 1
@@ -213,6 +212,7 @@ class TranslateMainActivity : AppCompatActivity() {
 
     private fun handleOnclickTranslateButton() {
         Log.i(TAG, "Translation button clicked!")
+        closeIme()
         val fromText = inputTextEditText?.text.toString()
 
         if (fromText.isBlank()) {
