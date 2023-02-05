@@ -12,12 +12,12 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import com.nurshuvo.translateme.MyApplication
 import com.nurshuvo.translateme.R
 import com.nurshuvo.translateme.data.repository.TranslationRepository
+import com.nurshuvo.translateme.database.entity.TranslationFavorites
 import com.nurshuvo.translateme.database.entity.TranslationHistory
-import com.nurshuvo.translateme.ui.adapter.HistoryAdapter
-import com.nurshuvo.translateme.ui.adapter.HistoryModel
+import com.nurshuvo.translateme.ui.adapter.TranslationListAdapter
+import com.nurshuvo.translateme.ui.adapter.ListItemModel
 import com.nurshuvo.translateme.ui.adapter.countOfSelectionLiveData
 import com.nurshuvo.translateme.ui.adapter.onClickedHistoryItem
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,7 +29,7 @@ import javax.inject.Inject
 class TranslationListActivity : AppCompatActivity() {
 
     // TODO Will move this data to VM.
-    private lateinit var historyOrFavoriteModelList: MutableList<HistoryModel>
+    private lateinit var listItemOrFavoriteModelList: MutableList<ListItemModel>
     private var isFavoriteListRequested: Boolean = false
 
     @Inject
@@ -78,21 +78,24 @@ class TranslationListActivity : AppCompatActivity() {
                 countOfSelectionLiveData.value = 0 // to update action bar title
                 lifecycleScope.launch {
                     var isAtleastOneSelected = false
-                    historyOrFavoriteModelList.forEach {
+                    listItemOrFavoriteModelList.forEach {
                         // delete that row from table if selected true
                         if (it.isSelected) { // Delete specific entry
                             isAtleastOneSelected = true
                             if (isFavoriteListRequested) {
-                                translationRepository.undoItemFavourite(
-                                    it.fromText
+                                translationRepository.deleteFavoriteItem(
+                                    TranslationFavorites(
+                                        it.id,
+                                        it.fromText,
+                                        it.translatedText
+                                    )
                                 )
                             } else {
                                 translationRepository.deleteHistoryItem(
                                     TranslationHistory(
                                         it.id,
                                         it.fromText,
-                                        it.translatedText,
-                                        it.isFavourite
+                                        it.translatedText
                                     )
                                 )
                             }
@@ -105,9 +108,9 @@ class TranslationListActivity : AppCompatActivity() {
                             .setPositiveButton("Yes") { _: DialogInterface, _: Int ->
                                 lifecycleScope.launch {
                                     if (isFavoriteListRequested) {
-                                        translationRepository.unDoAllFavoriteRecords()
+                                        translationRepository.deleteAllFavorites()
                                     } else {
-                                        translationRepository.deleteAll()
+                                        translationRepository.deleteAllHistory()
                                     }
 
                                     // update recycler view adapter with updated model list
@@ -156,33 +159,37 @@ class TranslationListActivity : AppCompatActivity() {
     }
 
     private suspend fun updateAdapterWithDB() {
-        val allHistoryData =
+        val allData = if (isFavoriteListRequested) {
+            translationRepository.getAllTranslationFavorites()
+        } else {
             translationRepository.getAllTranslationHistory()
-        historyOrFavoriteModelList = mutableListOf()
-        allHistoryData.forEach {
-            if (isFavoriteListRequested && it.isFavourite) {
-                historyOrFavoriteModelList.add(
-                    HistoryModel(
-                        it.id,
-                        it.fromText,
-                        it.translatedText,
-                        it.isFavourite,
-                        false
-                    )
-                )
-            } else if (!isFavoriteListRequested) {
-                historyOrFavoriteModelList.add(
-                    HistoryModel(
-                        it.id,
-                        it.fromText,
-                        it.translatedText,
-                        it.isFavourite,
-                        false
-                    )
-                )
-            }
         }
-        val adapter = HistoryAdapter(historyOrFavoriteModelList, 0)
+        listItemOrFavoriteModelList = mutableListOf()
+        allData.forEach {
+                when (it) {
+                    is TranslationHistory -> {
+                        listItemOrFavoriteModelList.add(
+                            ListItemModel(
+                                it.id,
+                                it.fromText,
+                                it.translatedText,
+                                false
+                            )
+                        )
+                    }
+                    is TranslationFavorites -> {
+                        listItemOrFavoriteModelList.add(
+                            ListItemModel(
+                                it.id,
+                                it.fromText,
+                                it.translatedText,
+                                false
+                            )
+                        )
+                    }
+                }
+        }
+        val adapter = TranslationListAdapter(listItemOrFavoriteModelList, 0)
         (findViewById<View>(R.id.history_recycler_view) as RecyclerView).adapter =
             adapter
     }

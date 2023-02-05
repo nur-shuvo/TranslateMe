@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.nurshuvo.translateme.database.TranslationDatabase
+import com.nurshuvo.translateme.database.dao.TranslationFavoritesDao
 import com.nurshuvo.translateme.database.dao.TranslationHistoryDao
 import dagger.Module
 import dagger.Provides
@@ -26,5 +27,10 @@ class DatabaseModule {
     @Singleton
     fun provideTranslationHistoryDao(translationDatabase: TranslationDatabase): TranslationHistoryDao {
         return translationDatabase.translationHistoryDao()
+    }
+    @Provides
+    @Singleton
+    fun provideTranslationFavoritesDao(translationDatabase: TranslationDatabase): TranslationFavoritesDao {
+        return translationDatabase.translationFavoritesDao()
     }
 }

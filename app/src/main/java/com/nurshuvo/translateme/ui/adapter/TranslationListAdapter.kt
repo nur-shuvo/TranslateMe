@@ -15,8 +15,8 @@ val onClickedHistoryItem: MutableLiveData<Boolean> = MutableLiveData()
 val countOfSelectionLiveData: MutableLiveData<Int> = MutableLiveData()
 
 // TODO: There are some duplicate code blocks, will clean it
-class HistoryAdapter(
-    private val historhistoryOrFavoriteModelList: List<HistoryModel>,
+class TranslationListAdapter(
+    private val historhistoryOrFavoriteModelList: List<ListItemModel>,
     private var countOfSelection: Int
 ) : RecyclerView.Adapter<ViewHolder>() {
 

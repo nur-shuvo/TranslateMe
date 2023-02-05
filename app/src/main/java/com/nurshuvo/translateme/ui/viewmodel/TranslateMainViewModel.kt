@@ -3,6 +3,7 @@ package com.nurshuvo.translateme.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.*
 import com.nurshuvo.translateme.data.repository.TranslationRepository
+import com.nurshuvo.translateme.database.entity.TranslationFavorites
 import com.nurshuvo.translateme.database.entity.TranslationHistory
 import com.nurshuvo.translateme.network.ApiService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,16 +32,8 @@ class TranslateMainViewModel @Inject constructor(
         translationRepository.addToTranslationHistory(translationHistory)
     }
 
-    suspend fun updateTranslationHistory(fromText: String) {
-        translationRepository.makeItemFavourite(fromText)
-    }
-
-    suspend fun undoFavoriteFromItems(fromText: String) {
-        translationRepository.undoItemFavourite(fromText)
-    }
-
-    suspend fun getAllTranslationHistory(): List<TranslationHistory> {
-        return translationRepository.getAllTranslationHistory()
+    suspend fun addToTranslationFavorites(translationFavorites: TranslationFavorites) {
+        translationRepository.addToTranslationFavorites(translationFavorites)
     }
 
     fun translateToEnglish(fromText: String) {

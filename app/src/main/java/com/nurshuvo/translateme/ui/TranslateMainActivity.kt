@@ -25,8 +25,8 @@ import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
-import com.nurshuvo.translateme.MyApplication
 import com.nurshuvo.translateme.R
+import com.nurshuvo.translateme.database.entity.TranslationFavorites
 import com.nurshuvo.translateme.database.entity.TranslationHistory
 import com.nurshuvo.translateme.ui.utils.closeIme
 import com.nurshuvo.translateme.ui.viewmodel.TranslateMainViewModel
@@ -186,7 +186,13 @@ class TranslateMainActivity : AppCompatActivity() {
                 .show()
             // update existing records in DB as favourite = true in history table
             lifecycleScope.launch {
-                viewModel.updateTranslationHistory(inputTextEditText?.text.toString())
+                viewModel.addToTranslationFavorites(
+                    TranslationFavorites(
+                        0,
+                        fromText = inputTextEditText?.text.toString(),
+                        translatedText = outputTextView?.text.toString()
+                    )
+                )
             }
         }
     }

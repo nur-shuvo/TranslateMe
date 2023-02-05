@@ -1,31 +1,41 @@
 package com.nurshuvo.translateme.data.repository
 
+import com.nurshuvo.translateme.database.dao.TranslationFavoritesDao
 import com.nurshuvo.translateme.database.dao.TranslationHistoryDao
+import com.nurshuvo.translateme.database.entity.TranslationFavorites
 import com.nurshuvo.translateme.database.entity.TranslationHistory
 import javax.inject.Inject
 
 class TranslationRepository @Inject constructor(
-    private val translationHistoryDao: TranslationHistoryDao
+    private val translationHistoryDao: TranslationHistoryDao,
+    private val translationFavoritesDao: TranslationFavoritesDao
 ) {
+
+    // Methods for handling History DB Table
     suspend fun getAllTranslationHistory(): List<TranslationHistory> {
         return translationHistoryDao.getAll()
     }
     suspend fun addToTranslationHistory(translationHistory: TranslationHistory) {
         translationHistoryDao.insert(translationHistory)
     }
-    suspend fun makeItemFavourite(fromText: String) {
-        translationHistoryDao.makeItemFavourite(fromText, true)
-    }
-    suspend fun undoItemFavourite(fromText: String) {
-        translationHistoryDao.makeItemFavourite(fromText, false)
-    }
     suspend fun deleteHistoryItem(translationHistory: TranslationHistory) {
         translationHistoryDao.deleteRow(translationHistory)
     }
-    suspend fun deleteAll() {
+    suspend fun deleteAllHistory() {
         translationHistoryDao.deleteAll()
     }
-    suspend fun unDoAllFavoriteRecords() {
-        translationHistoryDao.undoAllFavoriteItems(true, false)
+
+    // Methods for handling Favorite DB Table
+    suspend fun getAllTranslationFavorites(): List<TranslationFavorites> {
+        return translationFavoritesDao.getAll()
+    }
+    suspend fun addToTranslationFavorites(translationFavorites: TranslationFavorites) {
+        translationFavoritesDao.insert(translationFavorites)
+    }
+    suspend fun deleteFavoriteItem(translationFavorites: TranslationFavorites) {
+        translationFavoritesDao.deleteRow(translationFavorites)
+    }
+    suspend fun deleteAllFavorites() {
+        translationFavoritesDao.deleteAll()
     }
 }
