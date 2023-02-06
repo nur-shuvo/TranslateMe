@@ -40,7 +40,7 @@ private const val TAG = "TranslateMainActivity"
 private const val REQUEST_CODE_SPEECH_INPUT = 1
 
 @AndroidEntryPoint
-class TranslateMainActivity : AppCompatActivity() {
+class TranslateMainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
 
     private val viewModel: TranslateMainViewModel by viewModels()
     private var drawerLayout: DrawerLayout? = null
@@ -271,6 +271,7 @@ class TranslateMainActivity : AppCompatActivity() {
         actionBarDrawerToggle =
             ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close)
         drawerLayout?.addDrawerListener(actionBarDrawerToggle!!)
+        drawerLayout?.setDrawerListener(this)
         actionBarDrawerToggle?.syncState()
     }
 
@@ -336,6 +337,24 @@ class TranslateMainActivity : AppCompatActivity() {
         viewModel.translatedText.observe(this) { value ->
             findViewById<TextView>(R.id.txtVwOutput).text = value
         }
+    }
+
+    override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+        // Nothing
+    }
+
+    override fun onDrawerOpened(drawerView: View) {
+        if (inputTextEditText?.isCursorVisible == true)
+        inputTextEditText?.isCursorVisible = false
+    }
+
+    override fun onDrawerClosed(drawerView: View) {
+        if (inputTextEditText?.isCursorVisible == false)
+            inputTextEditText?.isCursorVisible = true
+    }
+
+    override fun onDrawerStateChanged(newState: Int) {
+        // Nothing
     }
 }
 
