@@ -55,6 +55,7 @@ class TranslateMainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
     private var frameLayout: FrameLayout? = null
     private var firstLanguage: TextView? = null
     private var toggleLanguage: ImageView? = null
+    private var toggleParentLanguage: LinearLayout? = null
     private var secondLanguage: TextView? = null
     private var ivMic: ImageView? = null
 
@@ -74,6 +75,7 @@ class TranslateMainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
         frameLayout = findViewById(R.id.frame_layout)
         firstLanguage = findViewById(R.id.firstLanguage)
         toggleLanguage = findViewById(R.id.ToggleLanguage)
+        toggleParentLanguage = findViewById(R.id.ToggleParentLanguage)
         secondLanguage = findViewById(R.id.secondLanguage)
         ivMic = findViewById(R.id.iv_mic);
 
@@ -136,6 +138,17 @@ class TranslateMainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
 
     private fun setOnCLickOnToggleButton() {
         toggleLanguage?.setOnClickListener() {
+            if (firstLanguage?.text == "Bengali") {
+                firstLanguage?.text = "English"
+                secondLanguage?.text = "Bengali"
+                viewModel.isBengaliToEnglish = false
+            } else {
+                firstLanguage?.text = "Bengali"
+                secondLanguage?.text = "English"
+                viewModel.isBengaliToEnglish = true
+            }
+        }
+        toggleParentLanguage?.setOnClickListener() {
             if (firstLanguage?.text == "Bengali") {
                 firstLanguage?.text = "English"
                 secondLanguage?.text = "Bengali"
@@ -344,13 +357,15 @@ class TranslateMainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
     }
 
     override fun onDrawerOpened(drawerView: View) {
-        if (inputTextEditText?.isCursorVisible == true)
-        inputTextEditText?.isCursorVisible = false
+        if (inputTextEditText?.isCursorVisible == true) {
+            inputTextEditText?.isCursorVisible = false
+        }
     }
 
     override fun onDrawerClosed(drawerView: View) {
-        if (inputTextEditText?.isCursorVisible == false)
+        if (inputTextEditText?.isCursorVisible == false){
             inputTextEditText?.isCursorVisible = true
+        }
     }
 
     override fun onDrawerStateChanged(newState: Int) {
