@@ -1,7 +1,7 @@
-package com.nurshuvo.translateme.database.dao
+package com.nurshuvo.translateme.data.database.dao
 
 import androidx.room.*
-import com.nurshuvo.translateme.database.entity.TranslationHistory
+import com.nurshuvo.translateme.data.database.entity.TranslationHistory
 
 @Dao
 interface TranslationHistoryDao {

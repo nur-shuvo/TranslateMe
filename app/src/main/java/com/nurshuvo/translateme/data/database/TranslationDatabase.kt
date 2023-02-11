@@ -1,11 +1,11 @@
-package com.nurshuvo.translateme.database
+package com.nurshuvo.translateme.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.nurshuvo.translateme.database.dao.TranslationFavoritesDao
-import com.nurshuvo.translateme.database.dao.TranslationHistoryDao
-import com.nurshuvo.translateme.database.entity.TranslationFavorites
-import com.nurshuvo.translateme.database.entity.TranslationHistory
+import com.nurshuvo.translateme.data.database.dao.TranslationFavoritesDao
+import com.nurshuvo.translateme.data.database.dao.TranslationHistoryDao
+import com.nurshuvo.translateme.data.database.entity.TranslationFavorites
+import com.nurshuvo.translateme.data.database.entity.TranslationHistory
 
 // Annotates class to be a Room Database with a table (entity) of the TranslationHistory class
 @Database(entities = [TranslationHistory::class, TranslationFavorites::class], version = 1, exportSchema = false)

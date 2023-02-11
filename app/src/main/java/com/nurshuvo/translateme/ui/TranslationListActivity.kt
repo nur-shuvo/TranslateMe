@@ -19,8 +19,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.nurshuvo.translateme.R
 import com.nurshuvo.translateme.data.repository.TranslationRepository
-import com.nurshuvo.translateme.database.entity.TranslationFavorites
-import com.nurshuvo.translateme.database.entity.TranslationHistory
+import com.nurshuvo.translateme.data.database.entity.TranslationFavorites
+import com.nurshuvo.translateme.data.database.entity.TranslationHistory
 import com.nurshuvo.translateme.ui.adapter.ListItemModel
 import com.nurshuvo.translateme.ui.adapter.TranslationListAdapter
 import com.nurshuvo.translateme.ui.adapter.countOfSelectionLiveData

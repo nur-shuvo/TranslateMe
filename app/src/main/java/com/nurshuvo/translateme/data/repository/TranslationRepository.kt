@@ -1,9 +1,9 @@
 package com.nurshuvo.translateme.data.repository
 
-import com.nurshuvo.translateme.database.dao.TranslationFavoritesDao
-import com.nurshuvo.translateme.database.dao.TranslationHistoryDao
-import com.nurshuvo.translateme.database.entity.TranslationFavorites
-import com.nurshuvo.translateme.database.entity.TranslationHistory
+import com.nurshuvo.translateme.data.database.dao.TranslationFavoritesDao
+import com.nurshuvo.translateme.data.database.dao.TranslationHistoryDao
+import com.nurshuvo.translateme.data.database.entity.TranslationFavorites
+import com.nurshuvo.translateme.data.database.entity.TranslationHistory
 import javax.inject.Inject
 
 class TranslationRepository @Inject constructor(

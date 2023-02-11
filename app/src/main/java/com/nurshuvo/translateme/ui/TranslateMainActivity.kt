@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -26,8 +27,8 @@ import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
 import com.nurshuvo.translateme.R
-import com.nurshuvo.translateme.database.entity.TranslationFavorites
-import com.nurshuvo.translateme.database.entity.TranslationHistory
+import com.nurshuvo.translateme.data.database.entity.TranslationFavorites
+import com.nurshuvo.translateme.data.database.entity.TranslationHistory
 import com.nurshuvo.translateme.ui.utils.closeIme
 import com.nurshuvo.translateme.ui.viewmodel.TranslateMainViewModel
 import com.nurshuvo.translateme.util.TranslationObject
@@ -43,6 +44,8 @@ private const val REQUEST_CODE_SPEECH_INPUT = 1
 class TranslateMainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
 
     private val viewModel: TranslateMainViewModel by viewModels()
+    private var textToSpeech: TextToSpeech ?= null
+
     private var drawerLayout: DrawerLayout? = null
     private var actionBarDrawerToggle: ActionBarDrawerToggle? = null
     private var navigationView: NavigationView? = null
@@ -58,9 +61,18 @@ class TranslateMainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
     private var toggleParentLanguage: LinearLayout? = null
     private var secondLanguage: TextView? = null
     private var ivMic: ImageView? = null
+    private var ivSpeaker: ImageView? = null
+    private var ivSpeaker1: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        textToSpeech = TextToSpeech(this) {
+            TextToSpeech.OnInitListener {
+                textToSpeech?.language = Locale("bn")
+            }
+        }
+
         setContentView(R.layout.activity_translate_main)
         setSupportActionBar(findViewById(R.id.my_toolbar))
 
@@ -77,7 +89,9 @@ class TranslateMainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
         toggleLanguage = findViewById(R.id.ToggleLanguage)
         toggleParentLanguage = findViewById(R.id.ToggleParentLanguage)
         secondLanguage = findViewById(R.id.secondLanguage)
-        ivMic = findViewById(R.id.iv_mic);
+        ivMic = findViewById(R.id.iv_mic)
+        ivSpeaker = findViewById(R.id.iv_speaker)
+        ivSpeaker1 = findViewById(R.id.iv_speaker1)
 
         setUpNavDrawer()
         supportActionBar?.setHomeButtonEnabled(true)
@@ -91,6 +105,7 @@ class TranslateMainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
         setOnCLickOnToggleButton()
         setOnCLickOnContentPasteOrCloseButton()
         setOnclickOnMicView()
+        setOnclickOnSpeakerView()
         setListenerOnInputOutPutView()
         initObserver()
     }
@@ -116,6 +131,23 @@ class TranslateMainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
         }
     }
 
+    private fun setOnclickOnSpeakerView() {
+        ivSpeaker?.setOnClickListener {
+            if (inputTextEditText?.text?.isEmpty() == true) {
+                Toast.makeText(this, "Please write something to listen", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            textToSpeech?.speak(inputTextEditText?.text, TextToSpeech.QUEUE_FLUSH, null, null)
+        }
+        ivSpeaker1?.setOnClickListener {
+            if (outputTextView?.text?.isEmpty() == true) {
+                Toast.makeText(this, "Please write something to listen", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            textToSpeech?.speak(outputTextView?.text, TextToSpeech.QUEUE_FLUSH, null, null)
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_SPEECH_INPUT) {
@@ -123,7 +155,7 @@ class TranslateMainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
                 val result = data?.getStringArrayListExtra(
                     RecognizerIntent.EXTRA_RESULTS
                 )
-                if (result != null && result.count() > 0) {
+                if (result != null && result.isNotEmpty()) {
                     inputTextEditText?.postDelayed(
                         {
                             inputTextEditText?.setText(result[0])
@@ -346,6 +378,11 @@ class TranslateMainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        textToSpeech?.stop()
+    }
+
     private fun initObserver() {
         viewModel.translatedText.observe(this) { value ->
             findViewById<TextView>(R.id.txtVwOutput).text = value
@@ -370,6 +407,11 @@ class TranslateMainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
 
     override fun onDrawerStateChanged(newState: Int) {
         // Nothing
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        textToSpeech?.shutdown()
     }
 }
 

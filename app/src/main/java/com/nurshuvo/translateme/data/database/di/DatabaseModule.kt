@@ -1,11 +1,11 @@
-package com.nurshuvo.translateme.database.di
+package com.nurshuvo.translateme.data.database.di
 
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.nurshuvo.translateme.database.TranslationDatabase
-import com.nurshuvo.translateme.database.dao.TranslationFavoritesDao
-import com.nurshuvo.translateme.database.dao.TranslationHistoryDao
+import com.nurshuvo.translateme.data.database.TranslationDatabase
+import com.nurshuvo.translateme.data.database.dao.TranslationFavoritesDao
+import com.nurshuvo.translateme.data.database.dao.TranslationHistoryDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
