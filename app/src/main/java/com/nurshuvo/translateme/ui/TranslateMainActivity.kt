@@ -169,7 +169,7 @@ class TranslateMainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
     }
 
     private fun setOnCLickOnToggleButton() {
-        toggleLanguage?.setOnClickListener() {
+        toggleLanguage?.setOnClickListener {
             if (firstLanguage?.text == "Bengali") {
                 firstLanguage?.text = "English"
                 secondLanguage?.text = "Bengali"
@@ -180,7 +180,7 @@ class TranslateMainActivity : AppCompatActivity(), DrawerLayout.DrawerListener {
                 viewModel.isBengaliToEnglish = true
             }
         }
-        toggleParentLanguage?.setOnClickListener() {
+        toggleParentLanguage?.setOnClickListener {
             if (firstLanguage?.text == "Bengali") {
                 firstLanguage?.text = "English"
                 secondLanguage?.text = "Bengali"
