@@ -1,5 +1,6 @@
 # Bengali-English-Translator
 A convenient app for translating texts with some cool features.
+![translateme](https://user-images.githubusercontent.com/19552183/219106699-19ae4e98-aa1a-4a72-8d08-53713136c01c.gif)
 ## Features
 **Features Added**
 * Translation from Bengali to English and vice-versa
